@@ -1,43 +1,36 @@
 package app.pp_3_1_1_spring_boot.service;
 
-import app.pp_3_1_1_spring_boot.dao.UserDAO;
+import app.pp_3_1_1_spring_boot.dao.UserRepository;
 import app.pp_3_1_1_spring_boot.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserDAO userDAO;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO) { this.userDAO = userDAO; }
+    public UserServiceImpl(UserRepository userRepository) { this.userRepository = userRepository; }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<User> getAllUsers() {
-        return userDAO.getAllUsers();
-    }
+    public List<User> getAllUsers() { return userRepository.findAll(); }
 
     @Override
-    @Transactional
-    public void saveUser(User user) {
-        userDAO.saveUser(user);
-    }
+    public void saveUser(User user) { userRepository.save(user); }
 
     @Override
-    @Transactional(readOnly = true)
     public User getUser(int id) {
-        return userDAO.getUser(id);
+        User user = null;
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) { user = userOptional.get(); }
+        return user;
     }
 
     @Override
-    @Transactional
-    public void deleteUser(int id) {
-        userDAO.deleteUser(id);
-    }
+    public void deleteUser(int id) { userRepository.deleteById(id); }
 
 }
